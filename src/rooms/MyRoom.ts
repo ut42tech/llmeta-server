@@ -2,7 +2,8 @@ import { Room, Client } from "@colyseus/core";
 import { MyRoomState, XRPlayer } from "./schema/MyRoomState";
 
 export class MyRoom extends Room<MyRoomState> {
-  maxClients = 16;
+  // MVP 要件: 同時最大 10 名
+  maxClients = 10;
   state = new MyRoomState();
 
   onCreate(options: any) {
@@ -31,6 +32,44 @@ export class MyRoom extends Room<MyRoomState> {
         if (typeof message.qy === "number") player.qy = message.qy;
         if (typeof message.qz === "number") player.qz = message.qz;
         if (typeof message.qw === "number") player.qw = message.qw;
+        player.lastUpdate = Date.now();
+      }
+    );
+
+    // XR hand pose updates (left & right). Sent less frequently by clients (e.g., 20Hz)
+    this.onMessage(
+      "hand_pose",
+      (
+        client,
+        message: {
+          hand: "left" | "right";
+          x?: number;
+          y?: number;
+          z?: number;
+          qx?: number;
+          qy?: number;
+          qz?: number;
+          qw?: number;
+        }
+      ) => {
+        const player = this.state.players.get(client.sessionId);
+        if (!player) return;
+        const prefix = message.hand === "right" ? "rh" : "lh"; // default left
+        // Dynamic assignment to schema fields
+        if (typeof message.x === "number")
+          (player as any)[`${prefix}x`] = message.x;
+        if (typeof message.y === "number")
+          (player as any)[`${prefix}y`] = message.y;
+        if (typeof message.z === "number")
+          (player as any)[`${prefix}z`] = message.z;
+        if (typeof message.qx === "number")
+          (player as any)[`${prefix}qx`] = message.qx;
+        if (typeof message.qy === "number")
+          (player as any)[`${prefix}qy`] = message.qy;
+        if (typeof message.qz === "number")
+          (player as any)[`${prefix}qz`] = message.qz;
+        if (typeof message.qw === "number")
+          (player as any)[`${prefix}qw`] = message.qw;
         player.lastUpdate = Date.now();
       }
     );

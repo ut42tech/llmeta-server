@@ -5,14 +5,14 @@ export enum MessageType {
 }
 
 export class Vec3 extends Schema {
-  @type("number") x: number;
-  @type("number") y: number;
-  @type("number") z: number;
+  @type("number") x: number = 0;
+  @type("number") y: number = 0;
+  @type("number") z: number = 0;
 }
 
 export class Player extends Schema {
-  @type(Vec3) position: Vec3;
-  @type(Vec3) rotation: Vec3;
+  @type(Vec3) position: Vec3 = new Vec3();
+  @type(Vec3) rotation: Vec3 = new Vec3();
 }
 
 export class MyRoomState extends Schema {

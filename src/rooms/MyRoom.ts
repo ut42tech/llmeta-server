@@ -12,9 +12,12 @@ export class MyRoom extends Room<MyRoomState> {
       console.log("update received -> ");
       console.debug(JSON.stringify(data));
       const player = this.state.players.get(client.sessionId);
-      player.x = data["x"];
-      player.y = data["y"];
-      player.z = data["z"];
+      player.position.x = data["x"];
+      player.position.y = data["y"];
+      player.position.z = data["z"];
+      player.rotation.x = data["rx"];
+      player.rotation.y = data["ry"];
+      player.rotation.z = data["rz"];
     });
   }
 
@@ -23,12 +26,6 @@ export class MyRoom extends Room<MyRoomState> {
 
     // create Player instance
     const player = new Player();
-
-    // place Player at a random position
-    const FLOOR_SIZE = 4;
-    player.x = -(FLOOR_SIZE / 2) + Math.random() * FLOOR_SIZE;
-    player.y = 1.031;
-    player.z = -(FLOOR_SIZE / 2) + Math.random() * FLOOR_SIZE;
 
     // place player in the map of players by its sessionId
     // (client.sessionId is unique per connection!)

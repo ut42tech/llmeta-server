@@ -1,5 +1,5 @@
 import { Room, Client } from "@colyseus/core";
-import { MyRoomState, Player } from "./schema/MyRoomState";
+import { MessageType, MyRoomState, Player, Vec3 } from "./schema/MyRoomState";
 
 export class MyRoom extends Room<MyRoomState> {
   maxClients = 10;
@@ -8,16 +8,24 @@ export class MyRoom extends Room<MyRoomState> {
   onCreate(options: any) {
     console.log("MyRoom created.");
 
-    this.onMessage("updatePosition", (client, data) => {
-      console.log("update received -> ");
+    //
+    // Handle MOVE
+    //
+    this.onMessage(MessageType.MOVE, (client, data) => {
+      console.log("move update received -> ");
       console.debug(JSON.stringify(data));
       const player = this.state.players.get(client.sessionId);
-      player.position.x = data["x"];
-      player.position.y = data["y"];
-      player.position.z = data["z"];
-      player.rotation.x = data["rx"];
-      player.rotation.y = data["ry"];
-      player.rotation.z = data["rz"];
+
+      // validate input
+      if (player && Array.isArray(data) && data.length === 6) {
+        player.position.x = data[0];
+        player.position.y = data[1];
+        player.position.z = data[2];
+
+        player.rotation.x = data[3];
+        player.rotation.y = data[4];
+        player.rotation.z = data[5];
+      }
     });
   }
 
@@ -25,7 +33,10 @@ export class MyRoom extends Room<MyRoomState> {
     console.log(client.sessionId, "joined!");
 
     // create Player instance
-    const player = new Player();
+    const player = new Player().assign({
+      position: new Vec3().assign({ x: 0, y: 0, z: 0 }),
+      rotation: new Vec3().assign({ x: 0, y: 0, z: 0 }),
+    });
 
     // place player in the map of players by its sessionId
     // (client.sessionId is unique per connection!)

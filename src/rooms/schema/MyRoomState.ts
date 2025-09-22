@@ -4,6 +4,11 @@ export enum MessageType {
   MOVE,
 }
 
+export type MoveData = {
+  position?: { x: number; y: number; z: number };
+  rotation?: { x: number; y: number; z: number };
+};
+
 export class Vec3 extends Schema {
   @type("number") x: number = 0;
   @type("number") y: number = 0;

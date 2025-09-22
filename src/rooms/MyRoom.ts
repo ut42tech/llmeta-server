@@ -1,5 +1,11 @@
 import { Room, Client } from "@colyseus/core";
-import { MessageType, MyRoomState, Player, Vec3 } from "./schema/MyRoomState";
+import {
+  MessageType,
+  MoveData,
+  MyRoomState,
+  Player,
+  Vec3,
+} from "./schema/MyRoomState";
 
 export class MyRoom extends Room<MyRoomState> {
   maxClients = 10;
@@ -11,20 +17,21 @@ export class MyRoom extends Room<MyRoomState> {
     //
     // Handle MOVE
     //
-    this.onMessage(MessageType.MOVE, (client, data) => {
-      console.log("move update received -> ");
-      console.debug(JSON.stringify(data));
+    this.onMessage(MessageType.MOVE, (client, payload: MoveData) => {
       const player = this.state.players.get(client.sessionId);
 
-      // validate input
-      if (player && Array.isArray(data) && data.length === 6) {
-        player.position.x = data[0];
-        player.position.y = data[1];
-        player.position.z = data[2];
+      const { position, rotation } = payload as MoveData;
 
-        player.rotation.x = data[3];
-        player.rotation.y = data[4];
-        player.rotation.z = data[5];
+      if (position) {
+        player.position.x = position.x ?? player.position.x;
+        player.position.y = position.y ?? player.position.y;
+        player.position.z = position.z ?? player.position.z;
+      }
+
+      if (rotation) {
+        player.rotation.x = rotation.x ?? player.rotation.x;
+        player.rotation.y = rotation.y ?? player.rotation.y;
+        player.rotation.z = rotation.z ?? player.rotation.z;
       }
     });
   }

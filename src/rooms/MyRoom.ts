@@ -20,7 +20,14 @@ export class MyRoom extends Room<MyRoomState> {
     this.onMessage(MessageType.MOVE, (client, payload: MoveData) => {
       const player = this.state.players.get(client.sessionId);
 
-      const { position, rotation } = payload as MoveData;
+      const {
+        position,
+        rotation,
+        leftHandPosition,
+        leftHandRotation,
+        rightHandPosition,
+        rightHandRotation,
+      } = payload as MoveData;
 
       if (position) {
         player.position.x = position.x ?? player.position.x;
@@ -33,6 +40,42 @@ export class MyRoom extends Room<MyRoomState> {
         player.rotation.y = rotation.y ?? player.rotation.y;
         player.rotation.z = rotation.z ?? player.rotation.z;
       }
+
+      if (leftHandPosition) {
+        player.leftHandPosition.x =
+          leftHandPosition.x ?? player.leftHandPosition.x;
+        player.leftHandPosition.y =
+          leftHandPosition.y ?? player.leftHandPosition.y;
+        player.leftHandPosition.z =
+          leftHandPosition.z ?? player.leftHandPosition.z;
+      }
+
+      if (leftHandRotation) {
+        player.leftHandRotation.x =
+          leftHandRotation.x ?? player.leftHandRotation.x;
+        player.leftHandRotation.y =
+          leftHandRotation.y ?? player.leftHandRotation.y;
+        player.leftHandRotation.z =
+          leftHandRotation.z ?? player.leftHandRotation.z;
+      }
+
+      if (rightHandPosition) {
+        player.rightHandPosition.x =
+          rightHandPosition.x ?? player.rightHandPosition.x;
+        player.rightHandPosition.y =
+          rightHandPosition.y ?? player.rightHandPosition.y;
+        player.rightHandPosition.z =
+          rightHandPosition.z ?? player.rightHandPosition.z;
+      }
+
+      if (rightHandRotation) {
+        player.rightHandRotation.x =
+          rightHandRotation.x ?? player.rightHandRotation.x;
+        player.rightHandRotation.y =
+          rightHandRotation.y ?? player.rightHandRotation.y;
+        player.rightHandRotation.z =
+          rightHandRotation.z ?? player.rightHandRotation.z;
+      }
     });
   }
 
@@ -43,6 +86,10 @@ export class MyRoom extends Room<MyRoomState> {
     const player = new Player().assign({
       position: new Vec3().assign({ x: 0, y: 0, z: 0 }),
       rotation: new Vec3().assign({ x: 0, y: 0, z: 0 }),
+      leftHandPosition: new Vec3().assign({ x: 0, y: 0, z: 0 }),
+      leftHandRotation: new Vec3().assign({ x: 0, y: 0, z: 0 }),
+      rightHandPosition: new Vec3().assign({ x: 0, y: 0, z: 0 }),
+      rightHandRotation: new Vec3().assign({ x: 0, y: 0, z: 0 }),
     });
 
     // place player in the map of players by its sessionId

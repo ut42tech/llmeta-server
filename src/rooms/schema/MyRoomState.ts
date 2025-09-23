@@ -7,6 +7,10 @@ export enum MessageType {
 export type MoveData = {
   position?: { x: number; y: number; z: number };
   rotation?: { x: number; y: number; z: number };
+  leftHandPosition?: { x: number; y: number; z: number };
+  leftHandRotation?: { x: number; y: number; z: number };
+  rightHandPosition?: { x: number; y: number; z: number };
+  rightHandRotation?: { x: number; y: number; z: number };
 };
 
 export class Vec3 extends Schema {
@@ -18,6 +22,10 @@ export class Vec3 extends Schema {
 export class Player extends Schema {
   @type(Vec3) position: Vec3 = new Vec3();
   @type(Vec3) rotation: Vec3 = new Vec3();
+  @type(Vec3) leftHandPosition: Vec3 = new Vec3();
+  @type(Vec3) leftHandRotation: Vec3 = new Vec3();
+  @type(Vec3) rightHandPosition: Vec3 = new Vec3();
+  @type(Vec3) rightHandRotation: Vec3 = new Vec3();
 }
 
 export class MyRoomState extends Schema {

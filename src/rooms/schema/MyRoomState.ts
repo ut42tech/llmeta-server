@@ -1,8 +1,13 @@
 import { Schema, type, MapSchema } from "@colyseus/schema";
 
 export enum MessageType {
+  CHANGE_PROFILE,
   MOVE,
 }
+
+export type ProfileData = {
+  isXR: boolean;
+};
 
 export type MoveData = {
   position?: { x: number; y: number; z: number };
@@ -20,6 +25,7 @@ export class Vec3 extends Schema {
 }
 
 export class Player extends Schema {
+  @type("boolean") isXR: boolean = false;
   @type(Vec3) position: Vec3 = new Vec3();
   @type(Vec3) rotation: Vec3 = new Vec3();
   @type(Vec3) leftHandPosition: Vec3 = new Vec3();

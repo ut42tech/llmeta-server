@@ -1,6 +1,7 @@
 import { Room, Client } from "@colyseus/core";
 import {
   MessageType,
+  ProfileData,
   MoveData,
   MyRoomState,
   Player,
@@ -13,6 +14,17 @@ export class MyRoom extends Room<MyRoomState> {
 
   onCreate(options: any) {
     console.log("MyRoom created.");
+
+    //
+    // Handle CHANGE_PROFILE
+    //
+    this.onMessage(
+      MessageType.CHANGE_PROFILE,
+      (client, payload: ProfileData) => {
+        const player = this.state.players.get(client.sessionId);
+        player.isXR = payload.isXR;
+      }
+    );
 
     //
     // Handle MOVE
@@ -41,7 +53,7 @@ export class MyRoom extends Room<MyRoomState> {
         player.rotation.z = rotation.z ?? player.rotation.z;
       }
 
-      if (leftHandPosition) {
+      if (leftHandPosition && player.isXR) {
         player.leftHandPosition.x =
           leftHandPosition.x ?? player.leftHandPosition.x;
         player.leftHandPosition.y =
@@ -50,7 +62,7 @@ export class MyRoom extends Room<MyRoomState> {
           leftHandPosition.z ?? player.leftHandPosition.z;
       }
 
-      if (leftHandRotation) {
+      if (leftHandRotation && player.isXR) {
         player.leftHandRotation.x =
           leftHandRotation.x ?? player.leftHandRotation.x;
         player.leftHandRotation.y =
@@ -59,7 +71,7 @@ export class MyRoom extends Room<MyRoomState> {
           leftHandRotation.z ?? player.leftHandRotation.z;
       }
 
-      if (rightHandPosition) {
+      if (rightHandPosition && player.isXR) {
         player.rightHandPosition.x =
           rightHandPosition.x ?? player.rightHandPosition.x;
         player.rightHandPosition.y =
@@ -68,7 +80,7 @@ export class MyRoom extends Room<MyRoomState> {
           rightHandPosition.z ?? player.rightHandPosition.z;
       }
 
-      if (rightHandRotation) {
+      if (rightHandRotation && player.isXR) {
         player.rightHandRotation.x =
           rightHandRotation.x ?? player.rightHandRotation.x;
         player.rightHandRotation.y =
@@ -84,6 +96,7 @@ export class MyRoom extends Room<MyRoomState> {
 
     // create Player instance
     const player = new Player().assign({
+      isXR: false,
       position: new Vec3().assign({ x: 0, y: 0, z: 0 }),
       rotation: new Vec3().assign({ x: 0, y: 0, z: 0 }),
       leftHandPosition: new Vec3().assign({ x: 0, y: 0, z: 0 }),

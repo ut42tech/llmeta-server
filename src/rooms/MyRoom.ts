@@ -23,6 +23,7 @@ export class MyRoom extends Room<MyRoomState> {
       (client, payload: ProfileData) => {
         const player = this.state.players.get(client.sessionId);
         player.isXR = payload.isXR;
+        player.isHandTracking = payload.isHandTracking;
       }
     );
 
@@ -97,6 +98,7 @@ export class MyRoom extends Room<MyRoomState> {
     // create Player instance
     const player = new Player().assign({
       isXR: false,
+      isHandTracking: false,
       position: new Vec3().assign({ x: 0, y: 0, z: 0 }),
       rotation: new Vec3().assign({ x: 0, y: 0, z: 0 }),
       leftHandPosition: new Vec3().assign({ x: 0, y: 0, z: 0 }),

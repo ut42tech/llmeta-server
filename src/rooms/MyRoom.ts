@@ -10,10 +10,12 @@ import {
 
 export class MyRoom extends Room<MyRoomState> {
   maxClients = 10;
-  state = new MyRoomState();
 
   onCreate(options: any) {
     console.log("MyRoom created.");
+    // @deprecated — Use .state = instead.
+    // this.setState(new MyRoomState());
+    this.state = new MyRoomState();
 
     //
     // Handle CHANGE_PROFILE

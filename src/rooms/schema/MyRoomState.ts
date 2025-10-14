@@ -1,41 +1,43 @@
 import { MapSchema, Schema, type } from "@colyseus/schema";
 
 export enum MessageType {
-  CHANGE_PROFILE,
-  MOVE,
+	CHANGE_PROFILE,
+	MOVE,
 }
 
 export type ProfileData = {
-  isXR?: boolean;
-  isHandTracking?: boolean;
+	isXR?: boolean;
+	isHandTracking?: boolean;
+	isVisible?: boolean;
 };
 
 export type MoveData = {
-  position?: { x: number; y: number; z: number };
-  rotation?: { x: number; y: number; z: number };
-  leftHandPosition?: { x: number; y: number; z: number };
-  leftHandRotation?: { x: number; y: number; z: number };
-  rightHandPosition?: { x: number; y: number; z: number };
-  rightHandRotation?: { x: number; y: number; z: number };
+	position?: { x: number; y: number; z: number };
+	rotation?: { x: number; y: number; z: number };
+	leftHandPosition?: { x: number; y: number; z: number };
+	leftHandRotation?: { x: number; y: number; z: number };
+	rightHandPosition?: { x: number; y: number; z: number };
+	rightHandRotation?: { x: number; y: number; z: number };
 };
 
 export class Vec3 extends Schema {
-  @type("number") x: number = 0;
-  @type("number") y: number = 0;
-  @type("number") z: number = 0;
+	@type("number") x: number = 0;
+	@type("number") y: number = 0;
+	@type("number") z: number = 0;
 }
 
 export class Player extends Schema {
-  @type("boolean") isXR: boolean = false;
-  @type("boolean") isHandTracking: boolean = false;
-  @type(Vec3) position: Vec3 = new Vec3();
-  @type(Vec3) rotation: Vec3 = new Vec3();
-  @type(Vec3) leftHandPosition: Vec3 = new Vec3();
-  @type(Vec3) leftHandRotation: Vec3 = new Vec3();
-  @type(Vec3) rightHandPosition: Vec3 = new Vec3();
-  @type(Vec3) rightHandRotation: Vec3 = new Vec3();
+	@type("boolean") isXR: boolean = false;
+	@type("boolean") isHandTracking: boolean = false;
+	@type("boolean") isVisible: boolean = false;
+	@type(Vec3) position: Vec3 = new Vec3();
+	@type(Vec3) rotation: Vec3 = new Vec3();
+	@type(Vec3) leftHandPosition: Vec3 = new Vec3();
+	@type(Vec3) leftHandRotation: Vec3 = new Vec3();
+	@type(Vec3) rightHandPosition: Vec3 = new Vec3();
+	@type(Vec3) rightHandRotation: Vec3 = new Vec3();
 }
 
 export class MyRoomState extends Schema {
-  @type({ map: Player }) players = new MapSchema<Player>();
+	@type({ map: Player }) players = new MapSchema<Player>();
 }

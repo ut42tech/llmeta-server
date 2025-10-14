@@ -1,17 +1,17 @@
-import { Room, Client } from "@colyseus/core";
+import { type Client, Room } from "@colyseus/core";
 import {
   MessageType,
-  ProfileData,
-  MoveData,
+  type MoveData,
   MyRoomState,
   Player,
+  type ProfileData,
   Vec3,
 } from "./schema/MyRoomState";
 
 export class MyRoom extends Room<MyRoomState> {
   maxClients = 10;
 
-  onCreate(options: any) {
+  onCreate(_options: any) {
     console.log("MyRoom created.");
     // @deprecated — Use .state = instead.
     // this.setState(new MyRoomState());
@@ -26,7 +26,7 @@ export class MyRoom extends Room<MyRoomState> {
         const player = this.state.players.get(client.sessionId);
         player.isXR = payload.isXR;
         player.isHandTracking = payload.isHandTracking;
-      }
+      },
     );
 
     //
@@ -94,7 +94,7 @@ export class MyRoom extends Room<MyRoomState> {
     });
   }
 
-  onJoin(client: Client, options: any) {
+  onJoin(client: Client, _options: any) {
     console.log(client.sessionId, "joined!");
 
     // create Player instance
@@ -114,7 +114,7 @@ export class MyRoom extends Room<MyRoomState> {
     this.state.players.set(client.sessionId, player);
   }
 
-  onLeave(client: Client, consented: boolean) {
+  onLeave(client: Client, _consented: boolean) {
     console.log(client.sessionId, "left!");
 
     this.state.players.delete(client.sessionId);

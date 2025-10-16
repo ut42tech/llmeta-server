@@ -1,128 +1,120 @@
 import { type Client, Room } from "@colyseus/core";
 import {
-	MessageType,
-	type MoveData,
-	MyRoomState,
-	Player,
-	type ProfileData,
-	Vec3,
+  MessageType,
+  type MoveData,
+  MyRoomState,
+  Player,
+  type ProfileData,
+  type Vec3,
+  type Vec3Data,
 } from "./schema/MyRoomState";
 
 export class MyRoom extends Room<MyRoomState> {
-	maxClients = 10;
+  maxClients = 10;
 
-	onCreate(_options: any) {
-		console.log("MyRoom created.");
-		// @deprecated — Use .state = instead.
-		// this.setState(new MyRoomState());
-		this.state = new MyRoomState();
+  /**
+   * プレイヤーを取得（存在しない場合は警告を出して null を返す）
+   */
+  private getPlayer(sessionId: string): Player | null {
+    const player = this.state.players.get(sessionId);
+    if (!player) {
+      console.warn(`Player ${sessionId} not found in state`);
+    }
+    return player;
+  }
 
-		//
-		// Handle CHANGE_PROFILE
-		//
-		this.onMessage(
-			MessageType.CHANGE_PROFILE,
-			(client, payload: ProfileData) => {
-				const player = this.state.players.get(client.sessionId);
-				player.isXR = payload.isXR;
-				player.isHandTracking = payload.isHandTracking;
-				player.isVisible = payload.isVisible;
-			},
-		);
+  /**
+   * Vec3 を更新（undefined の値はスキップ）
+   */
+  private updateVec3(target: Vec3, source: Vec3Data | Vec3 | undefined): void {
+    if (!source) return;
+    if (source.x !== undefined) target.x = source.x;
+    if (source.y !== undefined) target.y = source.y;
+    if (source.z !== undefined) target.z = source.z;
+  }
 
-		//
-		// Handle MOVE
-		//
-		this.onMessage(MessageType.MOVE, (client, payload: MoveData) => {
-			const player = this.state.players.get(client.sessionId);
+  onCreate(_options: any) {
+    console.log("MyRoom created.");
+    // @deprecated — Use .state = instead.
+    // this.setState(new MyRoomState());
+    this.state = new MyRoomState();
 
-			const {
-				position,
-				rotation,
-				leftHandPosition,
-				leftHandRotation,
-				rightHandPosition,
-				rightHandRotation,
-			} = payload as MoveData;
+    //
+    // Handle CHANGE_PROFILE
+    //
+    this.onMessage(
+      MessageType.CHANGE_PROFILE,
+      (client, payload: ProfileData) => {
+        const player = this.getPlayer(client.sessionId);
+        if (!player) return;
 
-			if (position) {
-				player.position.x = position.x ?? player.position.x;
-				player.position.y = position.y ?? player.position.y;
-				player.position.z = position.z ?? player.position.z;
-			}
+        // payloadの値が定義されている場合のみ更新
+        if (payload.isXR !== undefined) {
+          player.isXR = payload.isXR;
+          // XRモードを終了する場合、ハンドトラッキングもリセット
+          if (!payload.isXR) {
+            player.isHandTracking = false;
+          }
+        }
+        if (payload.isHandTracking !== undefined) {
+          // ハンドトラッキングはXRモード時のみ有効
+          player.isHandTracking = player.isXR ? payload.isHandTracking : false;
+        }
+        if (payload.isVisible !== undefined) {
+          player.isVisible = payload.isVisible;
+        }
+      },
+    );
 
-			if (rotation) {
-				player.rotation.x = rotation.x ?? player.rotation.x;
-				player.rotation.y = rotation.y ?? player.rotation.y;
-				player.rotation.z = rotation.z ?? player.rotation.z;
-			}
+    //
+    // Handle MOVE
+    //
+    this.onMessage(MessageType.MOVE, (client, payload: MoveData) => {
+      const player = this.getPlayer(client.sessionId);
+      if (!player) return;
 
-			if (leftHandPosition && player.isXR) {
-				player.leftHandPosition.x =
-					leftHandPosition.x ?? player.leftHandPosition.x;
-				player.leftHandPosition.y =
-					leftHandPosition.y ?? player.leftHandPosition.y;
-				player.leftHandPosition.z =
-					leftHandPosition.z ?? player.leftHandPosition.z;
-			}
+      const {
+        position,
+        rotation,
+        leftHandPosition,
+        leftHandRotation,
+        rightHandPosition,
+        rightHandRotation,
+      } = payload;
 
-			if (leftHandRotation && player.isXR) {
-				player.leftHandRotation.x =
-					leftHandRotation.x ?? player.leftHandRotation.x;
-				player.leftHandRotation.y =
-					leftHandRotation.y ?? player.leftHandRotation.y;
-				player.leftHandRotation.z =
-					leftHandRotation.z ?? player.leftHandRotation.z;
-			}
+      // 基本の位置と回転を更新
+      this.updateVec3(player.position, position);
+      this.updateVec3(player.rotation, rotation);
 
-			if (rightHandPosition && player.isXR) {
-				player.rightHandPosition.x =
-					rightHandPosition.x ?? player.rightHandPosition.x;
-				player.rightHandPosition.y =
-					rightHandPosition.y ?? player.rightHandPosition.y;
-				player.rightHandPosition.z =
-					rightHandPosition.z ?? player.rightHandPosition.z;
-			}
+      // XRモードの場合のみハンドトラッキングデータを更新
+      if (player.isXR) {
+        this.updateVec3(player.leftHandPosition, leftHandPosition);
+        this.updateVec3(player.leftHandRotation, leftHandRotation);
+        this.updateVec3(player.rightHandPosition, rightHandPosition);
+        this.updateVec3(player.rightHandRotation, rightHandRotation);
+      }
+    });
+  }
 
-			if (rightHandRotation && player.isXR) {
-				player.rightHandRotation.x =
-					rightHandRotation.x ?? player.rightHandRotation.x;
-				player.rightHandRotation.y =
-					rightHandRotation.y ?? player.rightHandRotation.y;
-				player.rightHandRotation.z =
-					rightHandRotation.z ?? player.rightHandRotation.z;
-			}
-		});
-	}
+  onJoin(client: Client, _options: any) {
+    console.log(client.sessionId, "joined!");
 
-	onJoin(client: Client, _options: any) {
-		console.log(client.sessionId, "joined!");
+    // create Player instance with default values
+    const player = new Player();
+    // Vec3のデフォルト値は0なので、明示的な代入は不要
 
-		// create Player instance
-		const player = new Player().assign({
-			isXR: false,
-			isHandTracking: false,
-			isVisible: false,
-			position: new Vec3().assign({ x: 0, y: 0, z: 0 }),
-			rotation: new Vec3().assign({ x: 0, y: 0, z: 0 }),
-			leftHandPosition: new Vec3().assign({ x: 0, y: 0, z: 0 }),
-			leftHandRotation: new Vec3().assign({ x: 0, y: 0, z: 0 }),
-			rightHandPosition: new Vec3().assign({ x: 0, y: 0, z: 0 }),
-			rightHandRotation: new Vec3().assign({ x: 0, y: 0, z: 0 }),
-		});
+    // place player in the map of players by its sessionId
+    // (client.sessionId is unique per connection!)
+    this.state.players.set(client.sessionId, player);
+  }
 
-		// place player in the map of players by its sessionId
-		// (client.sessionId is unique per connection!)
-		this.state.players.set(client.sessionId, player);
-	}
+  onLeave(client: Client, _consented: boolean) {
+    console.log(client.sessionId, "left!");
 
-	onLeave(client: Client, _consented: boolean) {
-		console.log(client.sessionId, "left!");
+    this.state.players.delete(client.sessionId);
+  }
 
-		this.state.players.delete(client.sessionId);
-	}
-
-	onDispose() {
-		console.log("room", this.roomId, "disposing...");
-	}
+  onDispose() {
+    console.log("room", this.roomId, "disposing...");
+  }
 }

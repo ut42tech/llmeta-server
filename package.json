@@ -1,48 +1,48 @@
 {
-	"private": true,
-	"name": "my-app",
-	"version": "1.0.0",
-	"description": "npm init template for bootstrapping an empty Colyseus project",
-	"main": "build/index.js",
-	"engines": {
-		"node": ">= 20.9.0"
-	},
-	"scripts": {
-		"start": "tsx watch src/index.ts",
-		"loadtest": "tsx loadtest/example.ts --room my_room --numClients 2",
-		"build": "npm run clean && tsc",
-		"clean": "rimraf build",
-		"test": "mocha -r tsx test/**_test.ts --exit --timeout 15000",
-		"lint": "biome lint --write ./src",
-		"format": "biome format --write ./src",
-		"check": "biome check --write ./src"
-	},
-	"author": "",
-	"license": "UNLICENSED",
-	"bugs": {
-		"url": "https://github.com/colyseus/create-colyseus/issues"
-	},
-	"homepage": "https://github.com/colyseus/create-colyseus#readme",
-	"devDependencies": {
-		"@biomejs/biome": "2.2.6",
-		"@colyseus/loadtest": "^0.16.1",
-		"@colyseus/testing": "^0.16.3",
-		"@types/express": "^5.0.3",
-		"@types/mocha": "^10.0.10",
-		"mocha": "^11.7.4",
-		"rimraf": "^6.0.1",
-		"tsx": "^4.20.6",
-		"typescript": "^5.9.3"
-	},
-	"dependencies": {
-		"@colyseus/auth": "^0.16.6",
-		"@colyseus/core": "^0.16.21",
-		"@colyseus/monitor": "^0.16.7",
-		"@colyseus/playground": "^0.16.4",
-		"@colyseus/schema": "^3.0.62",
-		"@colyseus/tools": "^0.16.14",
-		"@colyseus/ws-transport": "^0.16.5",
-		"colyseus": "^0.16.5",
-		"express": "^5.1.0"
-	}
+  "private": true,
+  "name": "my-app",
+  "version": "1.0.0",
+  "description": "npm init template for bootstrapping an empty Colyseus project",
+  "main": "build/index.js",
+  "engines": {
+    "node": ">= 20.9.0"
+  },
+  "scripts": {
+    "start": "tsx watch src/index.ts",
+    "loadtest": "tsx loadtest/example.ts --room my_room --numClients 2",
+    "build": "pnpm run clean && tsc",
+    "clean": "rimraf build",
+    "test": "mocha -r tsx test/**_test.ts --exit --timeout 15000",
+    "lint": "biome lint --write ./src",
+    "format": "biome format --write ./src",
+    "check": "biome check --write ./src"
+  },
+  "author": "",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/colyseus/create-colyseus/issues"
+  },
+  "homepage": "https://github.com/colyseus/create-colyseus#readme",
+  "devDependencies": {
+    "@biomejs/biome": "2.3.4",
+    "@colyseus/loadtest": "^0.16.1",
+    "@colyseus/testing": "^0.16.3",
+    "@types/express": "^5.0.5",
+    "@types/mocha": "^10.0.10",
+    "mocha": "^11.7.5",
+    "rimraf": "^6.1.0",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@colyseus/auth": "^0.16.6",
+    "@colyseus/core": "^0.16.22",
+    "@colyseus/monitor": "^0.16.7",
+    "@colyseus/playground": "^0.16.4",
+    "@colyseus/schema": "3.0.67",
+    "@colyseus/tools": "^0.16.14",
+    "@colyseus/ws-transport": "^0.16.5",
+    "colyseus": "^0.16.5",
+    "express": "^5.1.0"
+  }
 }

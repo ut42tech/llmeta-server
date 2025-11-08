@@ -30,9 +30,7 @@ export type Vec3Data = {
  * プロフィール更新メッセージ
  */
 export type ProfileData = {
-  isXR?: boolean;
-  isHandTracking?: boolean;
-  isVisible?: boolean;
+  username?: string;
 };
 
 /**
@@ -41,25 +39,17 @@ export type ProfileData = {
 export type MoveData = {
   position?: Vec3Data;
   rotation?: Vec3Data;
-  leftHandPosition?: Vec3Data;
-  leftHandRotation?: Vec3Data;
-  rightHandPosition?: Vec3Data;
-  rightHandRotation?: Vec3Data;
+  animation?: string;
 };
 
 /**
  * プレイヤー状態スキーマ
  */
 export class Player extends Schema {
-  @type("boolean") isXR = false;
-  @type("boolean") isHandTracking = false;
-  @type("boolean") isVisible = false;
+  @type("string") username = "Player";
   @type(Vec3) position = new Vec3();
   @type(Vec3) rotation = new Vec3();
-  @type(Vec3) leftHandPosition = new Vec3();
-  @type(Vec3) leftHandRotation = new Vec3();
-  @type(Vec3) rightHandPosition = new Vec3();
-  @type(Vec3) rightHandRotation = new Vec3();
+  @type("string") animation = "idle";
 }
 
 /**

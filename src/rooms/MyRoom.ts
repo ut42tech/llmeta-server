@@ -10,7 +10,7 @@ import {
 } from "./schema/MyRoomState";
 
 export class MyRoom extends Room<MyRoomState> {
-  maxClients = 10;
+  maxClients = 100;
 
   /**
    * プレイヤーを取得（存在しない場合は警告を出して null を返す）
@@ -48,20 +48,9 @@ export class MyRoom extends Room<MyRoomState> {
         const player = this.getPlayer(client.sessionId);
         if (!player) return;
 
-        // payloadの値が定義されている場合のみ更新
-        if (payload.isXR !== undefined) {
-          player.isXR = payload.isXR;
-          // XRモードを終了する場合、ハンドトラッキングもリセット
-          if (!payload.isXR) {
-            player.isHandTracking = false;
-          }
-        }
-        if (payload.isHandTracking !== undefined) {
-          // ハンドトラッキングはXRモード時のみ有効
-          player.isHandTracking = player.isXR ? payload.isHandTracking : false;
-        }
-        if (payload.isVisible !== undefined) {
-          player.isVisible = payload.isVisible;
+        const { username } = payload;
+        if (username !== undefined) {
+          player.username = username;
         }
       },
     );
@@ -73,25 +62,14 @@ export class MyRoom extends Room<MyRoomState> {
       const player = this.getPlayer(client.sessionId);
       if (!player) return;
 
-      const {
-        position,
-        rotation,
-        leftHandPosition,
-        leftHandRotation,
-        rightHandPosition,
-        rightHandRotation,
-      } = payload;
+      const { position, rotation } = payload;
 
       // 基本の位置と回転を更新
       this.updateVec3(player.position, position);
       this.updateVec3(player.rotation, rotation);
 
-      // XRモードの場合のみハンドトラッキングデータを更新
-      if (player.isXR) {
-        this.updateVec3(player.leftHandPosition, leftHandPosition);
-        this.updateVec3(player.leftHandRotation, leftHandRotation);
-        this.updateVec3(player.rightHandPosition, rightHandPosition);
-        this.updateVec3(player.rightHandRotation, rightHandRotation);
+      if (payload.animation !== undefined) {
+        player.animation = payload.animation;
       }
     });
   }
@@ -101,7 +79,6 @@ export class MyRoom extends Room<MyRoomState> {
 
     // create Player instance with default values
     const player = new Player();
-    // Vec3のデフォルト値は0なので、明示的な代入は不要
 
     // place player in the map of players by its sessionId
     // (client.sessionId is unique per connection!)

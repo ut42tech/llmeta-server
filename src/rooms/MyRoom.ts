@@ -33,7 +33,7 @@ export class MyRoom extends Room<MyRoomState> {
     if (source.z !== undefined) target.z = source.z;
   }
 
-  onCreate(_options: any) {
+  onCreate() {
     console.log("MyRoom created.");
     // @deprecated — Use .state = instead.
     // this.setState(new MyRoomState());
@@ -48,9 +48,15 @@ export class MyRoom extends Room<MyRoomState> {
         const player = this.getPlayer(client.sessionId);
         if (!player) return;
 
-        const { username } = payload;
+        const { username, avatar } = payload;
         if (username !== undefined) {
           player.username = username;
+        }
+        if (avatar !== undefined) {
+          if (avatar.headIconUrl !== undefined)
+            player.avatar.headIconUrl = avatar.headIconUrl;
+          if (avatar.id !== undefined) player.avatar.id = avatar.id;
+          if (avatar.vrmUrl !== undefined) player.avatar.vrmUrl = avatar.vrmUrl;
         }
       },
     );
@@ -74,7 +80,7 @@ export class MyRoom extends Room<MyRoomState> {
     });
   }
 
-  onJoin(client: Client, _options: any) {
+  onJoin(client: Client) {
     console.log(client.sessionId, "joined!");
 
     // create Player instance with default values

@@ -1,7 +1,7 @@
 import { MapSchema, Schema, type } from "@colyseus/schema";
 
 /**
- * メッセージタイプ（サーバーと同期）
+ * Message types (must match server)
  */
 export enum MessageType {
   CHANGE_PROFILE,
@@ -9,7 +9,7 @@ export enum MessageType {
 }
 
 /**
- * 3D座標スキーマ
+ * 3D vector schema
  */
 export class Vec3 extends Schema {
   @type("number") x = 0;
@@ -18,7 +18,7 @@ export class Vec3 extends Schema {
 }
 
 /**
- * プレーンな3D座標オブジェクト（メッセージ送信用）
+ * Plain 3D vector object (for messages)
  */
 export type Vec3Data = {
   x: number;
@@ -27,14 +27,24 @@ export type Vec3Data = {
 };
 
 /**
- * プロフィール更新メッセージ
+ * Viverse avatar data
+ */
+export class ViverseAvatar extends Schema {
+  @type("string") headIconUrl = "";
+  @type("number") id = 0;
+  @type("string") vrmUrl = "";
+}
+
+/**
+ * Profile update message
  */
 export type ProfileData = {
   username?: string;
+  avatar?: ViverseAvatar;
 };
 
 /**
- * 移動・姿勢更新メッセージ（送信用）
+ * Movement and pose update message (outbound)
  */
 export type MoveData = {
   position?: Vec3Data;
@@ -43,17 +53,18 @@ export type MoveData = {
 };
 
 /**
- * プレイヤー状態スキーマ
+ * Player state schema
  */
 export class Player extends Schema {
   @type("string") username = "Player";
+  @type(ViverseAvatar) avatar = new ViverseAvatar();
   @type(Vec3) position = new Vec3();
   @type(Vec3) rotation = new Vec3();
   @type("string") animation = "idle";
 }
 
 /**
- * ルーム状態スキーマ
+ * Room state schema
  */
 export class MyRoomState extends Schema {
   @type({ map: Player }) players = new MapSchema<Player>();

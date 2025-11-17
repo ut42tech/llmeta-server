@@ -58,7 +58,7 @@ export class MyRoom extends Room<MyRoomState> {
           if (avatar.id !== undefined) player.avatar.id = avatar.id;
           if (avatar.vrmUrl !== undefined) player.avatar.vrmUrl = avatar.vrmUrl;
         }
-      },
+      }
     );
 
     //
@@ -73,6 +73,10 @@ export class MyRoom extends Room<MyRoomState> {
       // 基本の位置と回転を更新
       this.updateVec3(player.position, position);
       this.updateVec3(player.rotation, rotation);
+
+      if (payload.isRunning !== undefined) {
+        player.isRunning = payload.isRunning;
+      }
 
       if (payload.animation !== undefined) {
         player.animation = payload.animation;
